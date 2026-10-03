@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>DualBone — лаунчер для Minecraft</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;700;800&family=Work+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #f4f1e9;
+    --bg-raised: #ebe6d8;
+    --text: #1d1b16;
+    --text-dim: #5b5748;
+    --accent: #8a6a32;
+    --accent-bright: #c9a877;
+    --moss: #3f5e4a;
+    --line: #d9d2bd;
+    font-size: 17px;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #17181c;
+      --bg-raised: #1f2024;
+      --text: #ece7da;
+      --text-dim: #9a9484;
+      --accent: #c9a877;
+      --accent-bright: #d9bc8c;
+      --moss: #6c9a7e;
+      --line: #313238;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #17181c;
+    --bg-raised: #1f2024;
+    --text: #ece7da;
+    --text-dim: #9a9484;
+    --accent: #c9a877;
+    --accent-bright: #d9bc8c;
+    --moss: #6c9a7e;
+    --line: #313238;
+  }
+
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  html {
+    scroll-padding-top: env(safe-area-inset-top, 0px);
+  }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: "Work Sans", system-ui, sans-serif;
+    line-height: 1.55;
+    padding-top: env(safe-area-inset-top, 0px);
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+    -webkit-font-smoothing: antialiased;
+  }
+  h1, h2, h3 {
+    font-family: "Archivo", system-ui, sans-serif;
+    margin: 0;
+    letter-spacing: -0.01em;
+  }
+  a { color: inherit; }
+  .wrap {
+    max-width: 920px;
+    margin: 0 auto;
+    padding: 0 28px;
+  }
+
+  /* top bar */
+  .topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 24px 0;
+  }
+  .brand {
+    font-family: "Archivo", sans-serif;
+    font-weight: 800;
+    font-size: 1.15rem;
+    text-decoration: none;
+    display: flex;
+    align-items: baseline;
+    gap: 2px;
+  }
+  .brand span { color: var(--accent); }
+  .theme-toggle {
+    background: none;
+    border: 1px solid var(--line);
+    color: var(--text-dim);
+    border-radius: 20px;
+    padding: 6px 14px;
+    font-family: "Work Sans", sans-serif;
+    font-size: 0.8rem;
+    cursor: pointer;
+  }
+  .theme-toggle:hover { border-color: var(--accent); color: var(--text); }
+
+  /* hero */
+  .hero {
+    padding: 56px 0 48px;
+    border-bottom: 1px solid var(--line);
+  }
+  .hero h1 {
+    font-size: clamp(2.4rem, 7vw, 3.6rem);
+    font-weight: 800;
+    max-width: 11ch;
+  }
+  .hero .tag {
+    font-size: clamp(1.3rem, 4vw, 1.7rem);
+    color: var(--text-dim);
+    font-weight: 500;
+    margin-top: 2px;
+    font-family: "Archivo", sans-serif;
+  }
+  .hero p.desc {
+    max-width: 58ch;
+    margin-top: 22px;
+    font-size: 1.04rem;
+    color: var(--text-dim);
+  }
+  .hero p.desc strong { color: var(--text); font-weight: 600; }
+
+  .ctas {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 30px;
+  }
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 13px 22px;
+    border-radius: 7px;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 0.97rem;
+    border: 1px solid transparent;
+  }
+  .btn-primary {
+    background: var(--accent);
+    color: #1a1708;
+  }
+  .btn-primary:hover { background: var(--accent-bright); }
+  .btn-ghost {
+    border-color: var(--line);
+    color: var(--text);
+  }
+  .btn-ghost:hover { border-color: var(--accent); }
+
+  .reqs {
+    margin-top: 20px;
+    font-size: 0.86rem;
+    color: var(--text-dim);
+  }
+  .reqs .dot { margin: 0 8px; opacity: 0.5; }
+
+  /* features */
+  .features { padding: 52px 0; }
+  .features h2 {
+    font-size: 1.4rem;
+    font-weight: 700;
+  }
+  .features .sub {
+    color: var(--text-dim);
+    margin-top: 8px;
+    font-size: 0.97rem;
+  }
+  .feat-list {
+    margin-top: 32px;
+    display: flex;
+    flex-direction: column;
+  }
+  .feat {
+    display: grid;
+    grid-template-columns: 56px 1fr;
+    gap: 18px;
+    padding: 20px 0;
+    border-top: 1px solid var(--line);
+  }
+  .feat:last-child { border-bottom: 1px solid var(--line); }
+  .feat .num {
+    font-family: "Archivo", sans-serif;
+    font-weight: 700;
+    font-size: 0.95rem;
+    color: var(--accent);
+    padding-top: 2px;
+  }
+  .feat h3 {
+    font-size: 1.04rem;
+    font-weight: 700;
+  }
+  .feat p {
+    margin: 6px 0 0;
+    color: var(--text-dim);
+    font-size: 0.93rem;
+    max-width: 56ch;
+  }
+
+  /* footer */
+  footer {
+    padding: 40px 0 56px;
+    border-top: 1px solid var(--line);
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 16px;
+    color: var(--text-dim);
+    font-size: 0.88rem;
+  }
+  footer a { text-decoration: underline; text-underline-offset: 3px; }
+  footer a:hover { color: var(--accent); }
+
+  @media (max-width: 560px) {
+    .feat { grid-template-columns: 1fr; gap: 4px; }
+    .feat .num { font-size: 0.8rem; }
+  }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <div class="topbar">
+    <a class="brand" href="#">Dual<span>Bone</span></a>
+    <button class="theme-toggle" id="themeToggle" type="button">Тёмная тема</button>
+  </div>
+</div>
+
+<div class="wrap">
+  <section class="hero">
+    <h1>Лаунчер,<br>собранный по косточкам.</h1>
+    <div class="tag">DualBone для Minecraft</div>
+    <p class="desc">
+      Настоящий вход через <strong>Microsoft</strong>, любые версии и загрузчики,
+      моды с <strong>Modrinth</strong>, свои сервера. Никаких обходов покупки игры —
+      только то, что действительно работает.
+    </p>
+    <div class="ctas">
+      <a class="btn btn-primary" href="https://github.com/danpaskal178-bot/dualbone-launcher/releases/download/DualBone/DualBone-Setup-1.0.0.exe">Скачать .exe</a>
+      <a class="btn btn-ghost" href="https://github.com/danpaskal178-bot/dualbone-launcher" target="_blank" rel="noopener">Открыть на GitHub</a>
+    </div>
+    <div class="reqs">Windows 10/11<span class="dot">·</span>нужен купленный Minecraft: Java Edition</div>
+  </section>
+
+  <section class="features">
+    <h2>Девять слотов, девять функций</h2>
+    <p class="sub">Всё, что уже реально работает в лаунчере — без заглушек.</p>
+
+    <div class="feat-list">
+      <div class="feat">
+        <div class="num">01</div>
+        <div><h3>Настоящий вход</h3><p>OAuth-вход через Microsoft, проверка владения игрой, реальный профиль и скин — без обходов и без пароля внутри лаунчера.</p></div>
+      </div>
+      <div class="feat">
+        <div class="num">02</div>
+        <div><h3>Версии и загрузчики</h3><p>Vanilla, Fabric, Forge, NeoForge, Quilt — список версий тянется прямо из официального манифеста Mojang.</p></div>
+      </div>
+      <div class="feat">
+        <div class="num">03</div>
+        <div><h3>Моды с Modrinth</h3><p>Поиск и установка модов под нужную версию и загрузчик — прямо внутри установки, без лишних вкладок браузера.</p></div>
+      </div>
+      <div class="feat">
+        <div class="num">04</div>
+        <div><h3>Ресурспаки</h3><p>Список, включение и выключение синхронизировано с настройками самой игры — не отдельная выдуманная галочка.</p></div>
+      </div>
+      <div class="feat">
+        <div class="num">05</div>
+        <div><h3>Шейдеры</h3><p>Установка и удаление шейдерпаков в одном месте, рядом с остальным содержимым установки.</p></div>
+      </div>
+      <div class="feat">
+        <div class="num">06</div>
+        <div><h3>Серверы</h3><p>Настоящий пинг по протоколу Minecraft — онлайн игроков, версия, задержка в мс, MOTD.</p></div>
+      </div>
+      <div class="feat">
+        <div class="num">07</div>
+        <div><h3>Логи</h3><p>Отдельно лог самого лаунчера и лог игры, с фильтром «только ошибки и предупреждения».</p></div>
+      </div>
+      <div class="feat">
+        <div class="num">08</div>
+        <div><h3>Гибкие настройки</h3><p>RAM по умолчанию, число потоков загрузки, папка кэша — то, что реально меняет поведение установки.</p></div>
+      </div>
+      <div class="feat">
+        <div class="num">09</div>
+        <div><h3>Светлая и тёмная тема</h3><p>Полноценная смена палитры на лету, с плавным переходом между темами — как у этой самой страницы.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <div>DualBone — некоммерческий проект-лаунчер для Minecraft: Java Edition.</div>
+    <div><a href="https://www.youtube.com/@Quacker228" target="_blank" rel="noopener">YouTube-канал автора</a></div>
+  </footer>
+</div>
+
+<script>
+  const btn = document.getElementById('themeToggle');
+  const root = document.documentElement;
+  function sysPrefersDark() {
+    return window.matchMedia('(prefers-color-scheme: dark)').matches;
+  }
+  function apply(theme) {
+    if (theme) root.setAttribute('data-theme', theme);
+    else root.removeAttribute('data-theme');
+    const isDark = theme ? theme === 'dark' : sysPrefersDark();
+    btn.textContent = isDark ? 'Светлая тема' : 'Тёмная тема';
+  }
+  let saved = null;
+  try { saved = localStorage.getItem('dualbone-theme'); } catch (e) {}
+  apply(saved);
+  btn.addEventListener('click', () => {
+    const current = root.getAttribute('data-theme') || (sysPrefersDark() ? 'dark' : 'light');
+    const next = current === 'dark' ? 'light' : 'dark';
+    apply(next);
+    try { localStorage.setItem('dualbone-theme', next); } catch (e) {}
+  });
+</script>
+
+</body>
+</html>
